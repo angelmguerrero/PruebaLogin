@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using PruebaLogin.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 
@@ -22,31 +23,53 @@ namespace PruebaLogin.Controllers
 
 
         [HttpPost]
-        public IActionResult UserLogin([Bind] Users user)
+        public IActionResult UserLogin([Bind] Usuario user)
         {
-            var users = new Users();
-            var allUsers = users.GetUser().FirstOrDefault();
 
-            if (users.GetUser().Any(u => u.UserName == user.UserName))
+
+            var context = new CPMLoginContext();
+            var studentsWithSameName = context.Usuario
+                                              .Where(s => s.Email == user.Email && s.Password == user.Password)
+                                              .FirstOrDefault();
+
+            if (studentsWithSameName != null)
             {
+                var lstOperacion = (from u in context.Usuario
+                                    join r in context.Rol on u.IdRol equals r.Id
+                                    join o in context.RolOperacion on r.Id equals o.IdRol
+                                    join op in context.Operaciones on o.IdOperacion equals op.Id
+                                    select op
+                                    ).ToList();
+
                 var userClaims = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Email, "anet@test.com"),
-                    new Claim(ClaimTypes.Role, "Administrador"),
-                    new Claim(ClaimTypes.Role, "Analista"),
-                    new Claim(ClaimTypes.Role, "Supervisor"),
+                    new Claim(ClaimTypes.Email, user.Email),
 
                 };
 
-                var grandmaIdentity = new ClaimsIdentity(userClaims, "User Identity");
+                foreach (Operaciones item in lstOperacion)
+                {
+                   userClaims.Add( new Claim(ClaimTypes.Role, item.Nombre));
+                }
+
+                var grandmaIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
 
                 var userPrincipal = new ClaimsPrincipal(new[] { grandmaIdentity });
                 HttpContext.SignInAsync(userPrincipal);
                 return RedirectToAction("Users", "Home");
             }
 
-            return View(user);
+            ViewBag.Error = "Usuario o contraseña invalida";
+            return View();
         }
+
+        public IActionResult Salir()
+        {
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return RedirectToAction("Index");
+
+        }
+
     }
 }

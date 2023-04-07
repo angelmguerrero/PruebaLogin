@@ -32,9 +32,9 @@ namespace PruebaLogin.Controllers
         {
 
             var claims = User.Claims.ToList();
-            string returnAddress = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            var uses = new Users();
-            return View(uses.GetUser());
+            var context = new CPMLoginContext();
+            var  lstUsuarios = (from u in context.Usuario select u);
+            return View(lstUsuarios);
 
         }
     }

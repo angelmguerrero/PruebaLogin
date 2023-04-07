@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PruebaLogin.Models.Users>
+﻿@model IEnumerable<PruebaLogin.Models.Usuario>
 @{
     ViewData["Title"] = "Users";
 }
@@ -11,13 +11,13 @@
                 @Html.DisplayNameFor(model => model.Id)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UserName)
+                @Html.DisplayNameFor(model => model.Nombre)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EmailId)
+                @Html.DisplayNameFor(model => model.IdRol)
             </th>
             <th></th>
         </tr>
@@ -30,13 +30,13 @@
                     @Html.DisplayFor(modelItem => item.Id)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
+                    @Html.DisplayFor(modelItem => item.Nombre)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.EmailId)
+                    @Html.DisplayFor(modelItem => item.IdRol)
                 </td>
             </tr>
         }
