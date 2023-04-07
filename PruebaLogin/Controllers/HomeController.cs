@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PruebaLogin.Models;
 
@@ -24,6 +26,16 @@ namespace PruebaLogin.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        [Authorize]
+        public ActionResult Users()
+        {
+
+            var claims = User.Claims.ToList();
+            string returnAddress = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var uses = new Users();
+            return View(uses.GetUser());
+
         }
     }
 }
